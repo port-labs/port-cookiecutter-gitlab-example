@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     API_STR: str = "/api"
     PROJECT_NAME: str = "port-cookiecutter-gitlab-example"
 
+    VERIFY_WEBHOOK: bool = False
+
     PORT_API_URL: str = "https://api.getport.io/v1"
     PORT_SERVICE_BLUEPRINT: str = "microservice"
     PORT_CLIENT_ID: str

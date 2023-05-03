@@ -12,8 +12,12 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+should_verify_webhook = settings.VERIFY_WEBHOOK
+print(f"should_verify_webhook: {should_verify_webhook}")
+deps = [Depends(verify_webhook)] if should_verify_webhook else None
 
-@router.post("/service", dependencies=[Depends(verify_webhook)])
+
+@router.post("/service", dependencies=deps)
 async def handle_create_service_webhook(webhook: Webhook):
     logger.info(f"Webhook body: {webhook}")
     action_type = webhook.payload['action']['trigger']

@@ -11,10 +11,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def create_repo(repo_name: str):
+def create_repo(repo_name: str, group_name: str):
     logger.info(f"Creating repo {repo_name}")
     logger.info(f"Getting Gitlab groups")
-    group_ids = gl.groups.list(search=settings.GITLAB_GROUP_NAME)
+    group_ids = gl.groups.list(search=group_name)
     if not group_ids:
         logger.error(f"Group not found {group_ids}")
         raise Exception("Group not found")
