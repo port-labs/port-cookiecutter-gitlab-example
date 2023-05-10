@@ -13,7 +13,7 @@ class BaseCreateService:
     def create(self, repo_name: str, props: dict) -> Union[Literal['FAILURE'], Literal['SUCCESS']]:
         project_dir = None
         # try get group_name from props or settings
-        group_name = props.get('group_name')
+        group_name = props.pop('group_name')
         if not group_name:
             group_name = gitlab.settings.GITLAB_GROUP_NAME
 

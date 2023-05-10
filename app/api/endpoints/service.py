@@ -1,11 +1,11 @@
 import logging
 from fastapi import APIRouter, Depends
 
-from mappings import ACTION_ID_TO_CLASS_MAPPING
 from api.deps import verify_webhook
 from clients import port
 from core.config import settings
 from schemas.webhook import Webhook
+from actions.create_custom_service import CreateCustomService
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,11 +25,11 @@ async def handle_create_service_webhook(webhook: Webhook):
     properties = webhook.payload['properties']
     repo = properties.pop('repository_name')
     run_id = webhook.context.runId
+    performed_on_bp = webhook.context.blueprint
 
     if action_type == 'CREATE':
         logger.info(f"{action_identifier} - create new service")
-        action_status = ACTION_ID_TO_CLASS_MAPPING.get(
-            action_identifier)().create(repo, properties)
+        action_status = CreateCustomService().create(repo, properties)
         message = f"{action_identifier} - action status after creating service is {action_status}"
 
         if action_status == 'SUCCESS':
@@ -38,7 +38,7 @@ async def handle_create_service_webhook(webhook: Webhook):
                                     ''),
                 'url': f"https://{settings.GITLAB_DOMAIN}/{settings.GITLAB_GROUP_NAME}/{repo}"
             }
-            create_status = port.create_entity(blueprint=settings.PORT_SERVICE_BLUEPRINT,
+            create_status = port.create_entity(blueprint=performed_on_bp,
                                                title=f"{settings.GITLAB_GROUP_NAME}/{repo}",
                                                properties=entity_properties, run_id=run_id)
             action_status = 'SUCCESS' if 200 <= create_status <= 299 else 'FAILURE'
