@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     GITLAB_ACCESS_TOKEN: str
     GITLAB_DOMAIN: str = "gitlab.com"
     GITLAB_GROUP_NAME: str
+    GITLAB_SYNC_GROUPS_PERIOD: int = 0
+
     PRIVATE_REPOSITORY: bool = True
 
     COOKIECUTTER_OUTPUT_DIR: str = "cookiecutter_output/{uuid}"

@@ -5,17 +5,16 @@ from typing import Literal, Union
 
 from clients import git, gitlab
 
+from core.config import settings
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class BaseCreateService:
-    def create(self, repo_name: str, props: dict) -> Union[Literal['FAILURE'], Literal['SUCCESS']]:
+    def create(self, repo_name: str, group_name: str, props: dict) -> Union[Literal['FAILURE'], Literal['SUCCESS']]:
         project_dir = None
         # try get group_name from props or settings
-        group_name = props.pop('group_name')
-        if not group_name:
-            group_name = gitlab.settings.GITLAB_GROUP_NAME
 
         try:
             logger.info(f"{self.__class__.__name__} - create cookiecutter")

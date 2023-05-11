@@ -21,3 +21,9 @@ def create_repo(repo_name: str, group_name: str):
     group_id = group_ids[0].id
     logger.info(f"Creating repo {repo_name} in group {group_id}")
     gl.projects.create({'name': repo_name, 'namespace_id': group_id})
+
+
+def get_all_groups_and_sub_groups():
+    logger.info(f"Getting Gitlab groups")
+    groups = gl.groups.list(all=True)
+    return groups

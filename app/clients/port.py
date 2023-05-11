@@ -15,14 +15,16 @@ def get_port_api_token():
     This function uses CLIENT_ID and CLIENT_SECRET from config
     """
 
-    credentials = {'clientId': settings.PORT_CLIENT_ID, 'clientSecret': settings.PORT_CLIENT_SECRET}
+    credentials = {'clientId': settings.PORT_CLIENT_ID,
+                   'clientSecret': settings.PORT_CLIENT_SECRET}
 
-    token_response = requests.post(f"{settings.PORT_API_URL}/auth/access_token", json=credentials)
+    token_response = requests.post(
+        f"{settings.PORT_API_URL}/auth/access_token", json=credentials)
 
     return token_response.json()['accessToken']
 
 
-def create_entity(blueprint: str, title: str, properties: dict, run_id: str, identifier: str = None):
+def create_entity(blueprint: str, title: str, properties: dict, run_id: str, relations: dict = {}, identifier: str = None):
     """
     Create new entity for blueprint in Port
     """
@@ -32,17 +34,20 @@ def create_entity(blueprint: str, title: str, properties: dict, run_id: str, ide
         'Authorization': f"Bearer {token}"
     }
     body = {
-      "title": title,
-      "properties": properties
+        "title": title,
+        "properties": properties,
+        "relations": relations
     }
 
     if identifier:
         body['identifier'] = identifier
 
     logger.info(f"create entity with: {json.dumps(body)}")
-    response = requests.post(f"{settings.PORT_API_URL}/blueprints/{blueprint}/entities?run_id={run_id}",
+    query_params = f"?run_id={run_id}" if run_id else ""
+    response = requests.post(f"{settings.PORT_API_URL}/blueprints/{blueprint}/entities{query_params}",
                              json=body, headers=headers)
-    logger.info(f"create entity response - status: {response.status_code}, body: {json.dumps(response.json())}")
+    logger.info(
+        f"create entity response - status: {response.status_code}, body: {json.dumps(response.json())}")
 
     return response.status_code
 
@@ -64,7 +69,9 @@ def update_action(run_id: str, message: str, status: Union[Literal['FAILURE'], L
     }
 
     logger.info(f"update action with: {json.dumps(body)}")
-    response = requests.patch(f"{settings.PORT_API_URL}/actions/runs/{run_id}", json=body, headers=headers)
-    logger.info(f"update action response - status: {response.status_code}, body: {json.dumps(response.json())}")
+    response = requests.patch(
+        f"{settings.PORT_API_URL}/actions/runs/{run_id}", json=body, headers=headers)
+    logger.info(
+        f"update action response - status: {response.status_code}, body: {json.dumps(response.json())}")
 
     return response.status_code
